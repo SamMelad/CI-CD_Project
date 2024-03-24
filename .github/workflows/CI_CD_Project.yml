@@ -7,9 +7,9 @@ on:
       - "main"
   workflow_dispatch:
 
-env:
-  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+# env:
+#   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 
 jobs:
@@ -60,25 +60,21 @@ jobs:
     needs: test-and-package
     runs-on: ubuntu-latest
     environment: Production
-    env:
-      aws-region: ${{ vars.AWS_REGION }} 
 
     steps:
 
-    - name: Checkout the files
-      uses: actions/checkout@v2
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
 
-    - name: Connect SSH
-      uses: easingthemes/ssh-deploy@main
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-        REMOTE_HOST: ${{ secrets.HOST_DNS }}
-        REMOTE_USER: ${{ secrets.USERNAME }}
-        TARGET: ${{ secrets.TARGET_DIR }}
-
-    - name: Deploy 
+    - name: Create CodeDeploy Deployment
+      id: deploy
       run: |
-        cd /home/ec2-user/my_project
-        git pull
-        pip install -r requirements.txt
-        python my_package/main.py
+          aws deploy create-deployment \
+            --application-name application-name \
+            --deployment-group-name AppDeploymentGroupName \
+            --deployment-config-name CodeDeployDefault.OneAtATime \
+            --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
