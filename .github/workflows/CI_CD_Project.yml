@@ -80,6 +80,6 @@ jobs:
           sudo yum update -y;
           sudo yum install git python3-pip -y;
           git clone https://github.com/SamMelad/CI-CD_Project.git;
-          cd your_repository;
+          cd CI-CD_Project;
           pip3 install -r requirements.txt;
           python3 my_package/main.py"
