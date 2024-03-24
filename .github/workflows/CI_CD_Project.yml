@@ -64,6 +64,15 @@ jobs:
       aws-region: ${{ vars.AWS_REGION }} 
 
     steps:
+
+    - name: Install SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
+
     - name: Deploy to EC2
       run: |
         ssh -o StrictHostKeyChecking=no -i /home/ec2-user/.ssh/id_rsa ec2-user@54.236.233.140
