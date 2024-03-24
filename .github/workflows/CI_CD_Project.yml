@@ -81,9 +81,8 @@ jobs:
     - name: Deploy to EC2
       run: |
         ssh -i ~/.ssh/id_rsa ec2-user@54.92.191.162 
-        echo "Current directory before cd:"
-        pwd
-        cd /home/ec2-user/my_project
+        cd ~
+        cd my_project
         git pull
         pip install -r requirements.txt
         python my_package/main.py
