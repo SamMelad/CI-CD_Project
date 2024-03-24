@@ -70,11 +70,18 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    - name: Create CodeDeploy Deployment
-      id: deploy
+    - name: Install SSH key
       run: |
-          aws deploy create-deployment \
-            --application-name application-name \
-            --deployment-group-name AppDeploymentGroupName \
-            --deployment-config-name CodeDeployDefault.OneAtATime \
-            --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
+    - name: Deploy to EC2
+      run: |
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@54.236.233.140 <<EOF
+        cd /home/ec2-user/my_project
+        git pull
+        pip install -r requirements.txt
+        python app.py
+        EOF
