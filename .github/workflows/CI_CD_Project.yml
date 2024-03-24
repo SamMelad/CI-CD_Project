@@ -66,7 +66,7 @@ jobs:
     steps:
     - name: Deploy to EC2
       run: |
-        ssh -i /home/ec2-user/.ssh/id_rsa.pub ec2-user@54.236.233.140
+        ssh -o StrictHostKeyChecking=no -i /home/ec2-user/.ssh/id_rsa ec2-user@54.236.233.140
         cd /home/ec2-user/my_project
         git pull
         pip install -r requirements.txt
