@@ -53,6 +53,7 @@ jobs:
   deploy:
     needs: test-and-package
     runs-on: ubuntu-latest
+    environment: Production
 
     steps:
     - name: Configure AWS credentials
@@ -60,7 +61,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ vars.AWS_REGION }}
+        aws-region: ${{ vars.AWS_REGION }} 
 
     - name: Deploy to EC2
       run: |
