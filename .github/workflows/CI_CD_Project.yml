@@ -75,4 +75,5 @@ jobs:
 
     - name: Deploy to EC2
       run: |
-        ssh -i ~/.ssh/id_rsa ec2-user@54.92.191.162 "git pull; pip install -r requirements.txt; python my_package/main.py"
+        scp -i ~/.ssh/id_rsa -r . ec2-user@54.92.191.162:~/my_package
+        ssh -i ~/.ssh/id_rsa ec2-user@54.92.191.162 "cd ~/my_package; git init; git pull; sudo apt-get install python3-pip -y; pip3 install -r requirements.txt; python3 main.py"
