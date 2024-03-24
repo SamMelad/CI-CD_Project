@@ -7,6 +7,11 @@ on:
       - "main"
   workflow_dispatch:
 
+env:
+  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+
 jobs:
   test-and-package:
    runs-on: ubuntu-latest
@@ -50,19 +55,15 @@ jobs:
          name: my_flask_app
          path: artifacts
 
+
   deploy:
     needs: test-and-package
     runs-on: ubuntu-latest
     environment: Production
+    env:
+      aws-region: ${{ vars.AWS_REGION }} 
 
     steps:
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ vars.AWS_REGION }} 
-
     - name: Deploy to EC2
       run: |
         ssh -i /home/ec2-user/.ssh/id_rsa.pub ec2-user@54.236.233.140
