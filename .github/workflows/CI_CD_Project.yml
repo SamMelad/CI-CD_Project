@@ -1,0 +1,71 @@
+name: CI/CD Pipline
+
+# Making 2 triggers one when push changes in main, and the other manully any time you want 
+on:
+  push:
+    branches:
+      - "main"
+  workflow_dispatch:
+
+jobs:
+  test-and-package:
+   runs-on: ubuntu-latest
+
+   env:
+    Python_v: '3.x'
+    require_file: 'requirements.txt'
+
+   steps:
+     - name: checkout code
+       uses: actions/checkout@v2
+
+     - name: set up Python
+       uses: actions/setup-python@v2
+       with:
+         python-version: ${{ env.Python_v }}
+
+     - name: create virtual environment
+       run: |
+        python -m pip install --upgrade pip
+        pip install -r ${{ env.require_file }}
+      
+     - name: run tests
+       run: |
+        python -m unittest discover -s my_package/tests -p 'test_*.py'
+
+     - name: lint with python 
+       run: |
+        pip install pylint
+        pylint my_package/main.py
+
+     - name: build package
+       run: |
+        python setup.py sdist bdist_wheel
+        mkdir artifacts
+        mv dist/* artifacts
+
+     - name: upload artifacts
+       uses: actions/upload-artifact@v2
+       with:
+         name: my_flask_app
+         path: artifacts
+
+  deploy:
+    needs: test-and-package
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Deploy to EC2
+      run: |
+        ssh -i /home/ec2-user/.ssh/id_rsa.pub ec2-user@54.236.233.140
+        cd /home/ec2-user/my_project
+        git pull
+        pip install -r requirements.txt
+        python my_package/main.py
