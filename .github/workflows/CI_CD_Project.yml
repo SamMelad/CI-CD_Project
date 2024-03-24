@@ -75,4 +75,8 @@ jobs:
 
     - name: Deploy to EC2
       run: |
-        ssh -i ~/.ssh/id_rsa ec2-user@54.92.191.162 "cd ~/my_project;  sudo yum install python3-pip -y; pip3 install -r requirements.txt; python3 my_package/main.py"
+        ssh -i ~/.ssh/id_rsa ec2-user@54.92.191.162 
+        sudo yum install python3-pip -y
+        git pull
+        pip3 install -r requirements.txt
+        python3 my_package/main.py"
