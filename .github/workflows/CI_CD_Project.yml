@@ -73,9 +73,8 @@ jobs:
 
     - name: Deploy to EC2
       run: |
-        ssh -i ~/.ssh/id_rsa ec2-user@54.92.191.162 <<EOF
+        ssh -i /home/ec2-user/.ssh/id_rsa ec2-user@54.92.191.162 
         cd /home/ec2-user/my_project
         git pull
         pip install -r requirements.txt
         python app.py
-        EOF
