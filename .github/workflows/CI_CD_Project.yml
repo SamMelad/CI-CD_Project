@@ -94,6 +94,7 @@ jobs:
             # Clone the repository if it doesn't exist, otherwise pull changes
             if [ ! -d \"CI-CD_Project\" ]; then
                 git clone https://github.com/SamMelad/CI-CD_Project.git;
+                cd CI-CD_Project;
             else
                 cd CI-CD_Project;
                 git pull;
