@@ -79,21 +79,24 @@ jobs:
             # Update the system packages
             sudo yum update -y;
 
-            # Install git and pip3 only if they are not already installed
-            for pkg in git python3-pip; do
-              if ! command -v $pkg &> /dev/null; then
-                sudo yum install $pkg -y;
-              fi
-            done
+            # Check if git is installed, if not install it
+            if ! command -v git &> /dev/null
+            then
+                sudo yum install git -y;
+            fi
+
+            # Check if pip3 is installed, if not install it
+            if ! command -v pip3 &> /dev/null
+            then
+                sudo yum install python3-pip -y;
+            fi
 
             # Clone the repository if it doesn't exist, otherwise pull changes
-            REPO_DIR='CI-CD_Project'
-            if [ ! -d \"$REPO_DIR\" ]; then
-              git clone https://github.com/SamMelad/CI-CD_Project.git;
-              cd $REPO_DIR
+            if [ ! -d \"CI-CD_Project\" ]; then
+                git clone https://github.com/SamMelad/CI-CD_Project.git;
             else
-              cd $REPO_DIR;
-              git pull;
+                cd CI-CD_Project;
+                git pull;
             fi
 
             # Install required Python packages
@@ -101,7 +104,6 @@ jobs:
 
             # Run the Python script
             python3 my_package/main.py"
-
 
 
     # - name: Deploy to EC2
