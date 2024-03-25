@@ -75,11 +75,43 @@ jobs:
 
     - name: Deploy to EC2
       run: |
-        
           ssh -i ~/.ssh/id_rsa ec2-user@54.87.206.26 "
+            # Update the system packages
             sudo yum update -y;
-            sudo yum install git python3-pip -y;
-            git clone https://github.com/SamMelad/CI-CD_Project.git;
-            cd CI-CD_Project;
+
+            # Check if git is installed, if not install it
+            if ! command -v git &> /dev/null
+            then
+                sudo yum install git -y;
+            fi
+
+            # Check if pip3 is installed, if not install it
+            if ! command -v pip3 &> /dev/null
+            then
+                sudo yum install python3-pip -y;
+            fi
+
+            # Clone the repository if it doesn't exist, otherwise pull changes
+            if [ ! -d \"CI-CD_Project\" ]; then
+                git clone https://github.com/SamMelad/CI-CD_Project.git;
+            else
+                cd CI-CD_Project;
+                git pull;
+            fi
+
+            # Install required Python packages
             pip3 install -r requirements.txt;
-            python3 my_package/main.py "
+
+            # Run the Python script
+            python3 my_package/main.py"
+
+
+    # - name: Deploy to EC2
+    #   run: |
+    #       ssh -i ~/.ssh/id_rsa ec2-user@54.87.206.26 "
+    #         sudo yum update -y;
+    #         sudo yum install git python3-pip -y;
+    #         git clone https://github.com/SamMelad/CI-CD_Project.git;
+    #         cd CI-CD_Project;
+    #         pip3 install -r requirements.txt;
+    #         python3 my_package/main.py "
