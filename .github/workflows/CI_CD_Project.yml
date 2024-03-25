@@ -76,10 +76,9 @@ jobs:
     - name: Deploy to EC2
       run: |
         ssh -i ~/.ssh/id_rsa ec2-user@54.87.206.26 
-        ssh -i ~/.ssh/id_rsa ec2-user@54.87.206.26 
         "sudo yum update -y;
          sudo yum install git python3-pip -y;
          git clone https://github.com/SamMelad/CI-CD_Project.git;
          cd CI-CD_Project;
          pip3 install -r requirements.txt;
-         python3 my_package/main.py"
+         python3 my_package/main.py "
