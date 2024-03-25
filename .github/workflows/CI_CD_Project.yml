@@ -67,7 +67,7 @@ jobs:
 
 
     - name: Install SSH key
-      run: |
+      run: | # Ensure ssh folder is exist 
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
@@ -75,7 +75,7 @@ jobs:
 
     - name: Deploy to EC2
       run: |
-        ssh -i ~/.ssh/id_rsa ec2-user@54.87.206.26 
+        
           ssh -i ~/.ssh/id_rsa ec2-user@54.87.206.26 "
             sudo yum update -y;
             sudo yum install git python3-pip -y;
