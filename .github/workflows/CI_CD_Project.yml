@@ -67,19 +67,26 @@ jobs:
 
 
     - name: Install SSH key
-      run: | # Ensure ssh folder is exist 
+      run: | 
+
+        # Ensure ssh folder is exist  
         mkdir -p ~/.ssh
+
+        # Copy id_rsa to runner to connect to instance
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H 54.172.224.100 >> ~/.ssh/known_hosts
 
     - name: Deploy to EC2
       run: |
+
+          # Connect ssh to instance and perform these commands 
           ssh -i ~/.ssh/id_rsa ec2-user@54.172.224.100 "
+            
             # Update the system packages
             sudo yum update -y;
 
-            # Check if git is installed, if not install it
+            # Check if git is installed and if not install it
             if ! command -v git &> /dev/null
             then
                 sudo yum install git -y;
@@ -91,28 +98,21 @@ jobs:
                 sudo yum install python3-pip -y;
             fi
 
-            # Clone the repository if it doesn't exist, otherwise pull changes
+
+            # Clone the repository if it doesn't exist,
             if [ ! -d \"CI-CD_Project\" ]; then
                 git clone https://github.com/SamMelad/CI-CD_Project.git;
                 cd CI-CD_Project;
             else
+                # If repo already exist and this deployment for features it will pull changes only
                 cd CI-CD_Project;
                 git pull;
             fi
 
-            # Install required Python packages
+
+            # Install required Python packages for this app
             pip3 install -r requirements.txt;
 
-            # Run the Python script
+
+            # Run the Python app 
             python3 my_package/main.py"
-
-
-    # - name: Deploy to EC2
-    #   run: |
-    #       ssh -i ~/.ssh/id_rsa ec2-user@54.87.206.26 "
-    #         sudo yum update -y;
-    #         sudo yum install git python3-pip -y;
-    #         git clone https://github.com/SamMelad/CI-CD_Project.git;
-    #         cd CI-CD_Project;
-    #         pip3 install -r requirements.txt;
-    #         python3 my_package/main.py "
